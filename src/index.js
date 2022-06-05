@@ -15,9 +15,12 @@ function init() {
 function addSelectionContainer() {
   const selectionContainer = `
     <div class="selection-container">
-      <select class="select-category">
+      <label for="select-category">Select a Category</label>
+      <select id="select-category" class="select-category">
         <option value="0">Random Category</option>
       </select>
+      <label for="num-questions-input">Number of Questions</label>
+      <input id="num-questions-input" type="number" name="amount" min=1 />
       <button class="submit-category-btn">Select Category</button>
     </div>
   `;
@@ -29,7 +32,10 @@ function addSelectionContainer() {
 async function startGame() {
   const game = new Game();
   const category = parseInt(document.querySelector('.select-category').value);
-  await Question.getQuestions(game, category);
+  const questionAmount = parseInt(
+    document.querySelector('#num-questions-input').value
+  );
+  await Question.getQuestions(game, category, questionAmount);
   mainContent.innerHTML = '';
   displayQuestion(game);
 }
@@ -48,7 +54,7 @@ function checkAnswer(game) {
     setTimeout(() => {
       mainContent.lastChild.remove();
       resolve();
-    }, 3000);
+    }, 500);
   });
 }
 
@@ -66,6 +72,8 @@ function displayQuestion(game) {
       game.nextQuestion();
       if (game.current <= game.questions.length - 1) {
         displayQuestion(game);
+      } else {
+        endGame(game);
       }
     });
   });
@@ -73,11 +81,22 @@ function displayQuestion(game) {
   const answerDiv = document.querySelector('.answers');
   game.currentQuestion.allAnswers.forEach((answer, idx) => {
     const answerInput = `
-      <input id="answer${idx}" name="answer" type="radio" value=${answer}
+      <input id="answer${idx}" name="answer" type="radio" value="${answer}"
       <label for="answer${idx}">${answer}</label>
       `;
     answerDiv.insertAdjacentHTML('beforeend', answerInput);
   });
+}
+
+function endGame(game) {
+  mainContent.innerHTML = '';
+  const endGameHTML = `
+    <div>
+      <h1>Game Over. Your score ${game.score} / ${game.questions.length}<h1>
+    </div>
+  `;
+  mainContent.insertAdjacentHTML('beforeend', endGameHTML);
+  init();
 }
 
 async function getCategories() {

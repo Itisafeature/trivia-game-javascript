@@ -5,8 +5,8 @@ export default class Question {
     this.incorrectAnswers = incorrectAnswers;
   }
 
-  static async getQuestions(game, category) {
-    let url = 'https://opentdb.com/api.php?amount=10';
+  static async getQuestions(game, category, amount) {
+    let url = `https://opentdb.com/api.php?amount=${amount}`;
     url += category > 0 ? `&category=${category}` : '';
     const response = await fetch(url);
     const data = await response.json();
