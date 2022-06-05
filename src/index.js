@@ -2,7 +2,6 @@ import Question from './Question';
 import Game from './Game';
 
 const mainContent = document.querySelector('.main-content');
-let selectCategory;
 
 document.addEventListener('DOMContentLoaded', () => {
   init();
@@ -23,30 +22,14 @@ function addSelectionContainer() {
     </div>
   `;
   mainContent.insertAdjacentHTML('beforeend', selectionContainer);
-  selectCategory = document.querySelector('.select-category');
   const selectBtn = document.querySelector('.submit-category-btn');
   selectBtn.addEventListener('click', startGame);
 }
 
-async function getQuestions(game) {
-  const category = parseInt(selectCategory.value);
-  let url = 'https://opentdb.com/api.php?amount=10';
-  url += category > 0 ? `&category=${category}` : '';
-  const response = await fetch(url);
-  const data = await response.json();
-  data.results.forEach(questionData => {
-    const question = new Question(
-      questionData.question,
-      questionData.correct_answer,
-      questionData.incorrect_answers
-    );
-    game.addQuestion(question);
-  });
-}
-
 async function startGame() {
   const game = new Game();
-  await getQuestions(game);
+  const category = parseInt(document.querySelector('.select-category').value);
+  await Question.getQuestions(game, category);
   mainContent.innerHTML = '';
   displayQuestion(game);
 }
@@ -100,6 +83,7 @@ function displayQuestion(game) {
 async function getCategories() {
   const response = await fetch('https://opentdb.com/api_category.php');
   const data = await response.json();
+  const selectCategory = document.querySelector('.select-category');
   data.trivia_categories.forEach(category => {
     const option = `<option value=${category.id}>${category.name}</option>`;
     selectCategory.insertAdjacentHTML('beforeend', option);
