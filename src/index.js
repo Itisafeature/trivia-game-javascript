@@ -3,7 +3,6 @@ import Game from './Game';
 
 const mainContent = document.querySelector('.main-content');
 let selectCategory;
-let game;
 
 document.addEventListener('DOMContentLoaded', () => {
   init();
@@ -12,7 +11,6 @@ document.addEventListener('DOMContentLoaded', () => {
 function init() {
   addSelectionContainer();
   getCategories();
-  game = new Game([]);
 }
 
 function addSelectionContainer() {
@@ -27,10 +25,10 @@ function addSelectionContainer() {
   mainContent.insertAdjacentHTML('beforeend', selectionContainer);
   selectCategory = document.querySelector('.select-category');
   const selectBtn = document.querySelector('.submit-category-btn');
-  selectBtn.addEventListener('click', getQuestions);
+  selectBtn.addEventListener('click', startGame);
 }
 
-async function getQuestions() {
+async function getQuestions(game) {
   const category = parseInt(selectCategory.value);
   let url = 'https://opentdb.com/api.php?amount=10';
   url += category > 0 ? `&category=${category}` : '';
@@ -42,27 +40,57 @@ async function getQuestions() {
       questionData.correct_answer,
       questionData.incorrect_answers
     );
-    game.questions.push(question);
-    startGame();
+    game.addQuestion(question);
   });
 }
 
-function startGame() {
+async function startGame() {
+  const game = new Game();
+  await getQuestions(game);
   mainContent.innerHTML = '';
-  displayQuestion();
+  displayQuestion(game);
 }
 
-function displayQuestion() {
+function checkAnswer(game) {
+  const answer = document.querySelector('input[name="answer"]:checked').value;
+  let display;
+  if (answer === game.currentQuestion.correctAnswer) {
+    game.addScore();
+    display = '<p>You got it right!</p>';
+  } else {
+    display = '<p>You got it wrong!</p>';
+  }
+  mainContent.insertAdjacentHTML('beforeend', display);
+  return new Promise(function (resolve, reject) {
+    setTimeout(() => {
+      mainContent.lastChild.remove();
+      resolve();
+    }, 3000);
+  });
+}
+
+function displayQuestion(game) {
   const displayedQuestion = `
     <p>${game.currentQuestion.content}
     <div class="answers">
     </div>
+    <button class="submit-answer-btn">Submit</button>
   `;
   mainContent.innerHTML = displayedQuestion;
+
+  document.querySelector('.submit-answer-btn').addEventListener('click', () => {
+    checkAnswer(game).then(() => {
+      game.nextQuestion();
+      if (game.current <= game.questions.length - 1) {
+        displayQuestion(game);
+      }
+    });
+  });
+
   const answerDiv = document.querySelector('.answers');
   game.currentQuestion.allAnswers.forEach((answer, idx) => {
     const answerInput = `
-      <input id="answer${idx}" type="radio" value=${answer}
+      <input id="answer${idx}" name="answer" type="radio" value=${answer}
       <label for="answer${idx}">${answer}</label>
       `;
     answerDiv.insertAdjacentHTML('beforeend', answerInput);
