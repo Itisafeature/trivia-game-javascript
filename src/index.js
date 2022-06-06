@@ -36,9 +36,8 @@ function addSelectionContainer() {
 async function startGame() {
   const game = new Game();
   const category = parseInt(document.querySelector('.select-category').value);
-  const questionAmount = parseInt(
-    document.querySelector('#num-questions-input').value
-  );
+  const questionAmount =
+    parseInt(document.querySelector('#num-questions-input').value) || 10;
   await Question.getQuestions(game, category, questionAmount);
   mainContent.innerHTML = '';
   displayQuestion(game);
