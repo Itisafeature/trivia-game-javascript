@@ -1,7 +1,10 @@
 import Question from './Question';
 import Game from './Game';
 
+// TODO fix calling get categories multiple times
+
 const mainContent = document.querySelector('.main-content');
+let categories;
 
 document.addEventListener('DOMContentLoaded', () => {
   init();
@@ -9,7 +12,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function init() {
   addSelectionContainer();
-  getCategories();
+  if (!categories) {
+    getCategories();
+  } else {
+    displayCategoryOptions(categories);
+  }
 }
 
 function addSelectionContainer() {
@@ -54,7 +61,7 @@ function checkAnswer(game) {
     setTimeout(() => {
       mainContent.lastChild.remove();
       resolve();
-    }, 500);
+    }, 2000);
   });
 }
 
@@ -102,8 +109,13 @@ function endGame(game) {
 async function getCategories() {
   const response = await fetch('https://opentdb.com/api_category.php');
   const data = await response.json();
+  categories = data;
+  displayCategoryOptions(categories);
+}
+
+function displayCategoryOptions(categories) {
   const selectCategory = document.querySelector('.select-category');
-  data.trivia_categories.forEach(category => {
+  categories.trivia_categories.forEach(category => {
     const option = `<option value=${category.id}>${category.name}</option>`;
     selectCategory.insertAdjacentHTML('beforeend', option);
   });
