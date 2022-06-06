@@ -1,0 +1,28 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background-image: linear-gradient(to bottom right, red, yellow);
+  height: 100vh;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+header {
+  text-align: center;
+}
+
+.selection-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-items: center;
+}
+
+#select-category, #num-questions-input {
+  width: 20%;
+  margin-top: 5px;
+  margin-bottom: 10px;
+}

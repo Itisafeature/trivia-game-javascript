@@ -9,10 +9,10 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 async function init() {
-  addSelectionContainer();
   if (Category.allCategories.length === 0) {
     await getCategories();
   }
+  addSelectionContainer();
   displayCategoryOptions();
 }
 
