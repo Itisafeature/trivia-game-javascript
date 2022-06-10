@@ -1,5 +1,6 @@
 * {
   box-sizing: border-box;
+  margin: 0;
 }
 
 body {
@@ -8,10 +9,13 @@ body {
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
+  display: flex;
+  flex-direction: column;
 }
 
 header {
   text-align: center;
+  margin-top: 30px;
 }
 
 .selection-container {
@@ -26,3 +30,51 @@ header {
   margin-top: 5px;
   margin-bottom: 10px;
 }
+
+.main-content {
+  height: 100%;
+}
+
+.question-answers-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
+.question-content {
+  margin-bottom: 50px;
+  font-size: 1.2rem;
+}
+
+.answer {
+  margin-bottom: 20px;
+}
+
+.submit-answer-btn {
+  margin-top: 20px;
+  padding: 10px;
+  border-radius: 10px;
+  background-color: lightblue;
+}
+
+.correct-answer, .incorrect-answer {
+  position: absolute;
+  top: 25%;
+  left: 42%;
+  font-size: 2.5rem;
+}
+
+.correct-answer {
+  color: green;
+}
+
+.incorrect-answer { 
+  color: red;
+}
+
+.answer-label {
+  margin-left: 20px;
+}
+

@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 async function init() {
   if (Category.allCategories.length === 0) {
-    await getCategories();
+    await Category.getCategories();
   }
   addSelectionContainer();
   displayCategoryOptions();
@@ -48,11 +48,15 @@ function checkAnswer(game) {
   let display;
   if (answer === game.currentQuestion.correctAnswer) {
     game.addScore();
-    display = '<p>You got it right!</p>';
+    display = '<p class="correct-answer">You got it right!</p>';
   } else {
-    display = '<p>You got it wrong!</p>';
+    display = '<p class="incorrect-answer">You got it wrong!</p>';
   }
-  mainContent.insertAdjacentHTML('beforeend', display);
+
+  document
+    .querySelector('.question-answers-container')
+    .insertAdjacentHTML('beforebegin', display);
+
   return new Promise(function (resolve, reject) {
     setTimeout(() => {
       mainContent.lastChild.remove();
@@ -63,10 +67,11 @@ function checkAnswer(game) {
 
 function displayQuestion(game) {
   const displayedQuestion = `
-    <p>${game.currentQuestion.content}
-    <div class="answers">
+    <div class="question-answers-container">
+      <p class="question-content">${game.currentQuestion.content}
+      <div class="answers"></div>
+      <button class="submit-answer-btn">Submit Answer</button>
     </div>
-    <button class="submit-answer-btn">Submit</button>
   `;
   mainContent.innerHTML = displayedQuestion;
 
@@ -84,8 +89,10 @@ function displayQuestion(game) {
   const answerDiv = document.querySelector('.answers');
   game.currentQuestion.allAnswers.forEach((answer, idx) => {
     const answerInput = `
-      <input id="answer${idx}" name="answer" type="radio" value="${answer}"
-      <label for="answer${idx}">${answer}</label>
+      <div class="answer">
+        <input id="answer${idx}" name="answer" type="radio" value="${answer}" />
+        <label class="answer-label" for="answer${idx}">${answer}</label>
+      </div>
       `;
     answerDiv.insertAdjacentHTML('beforeend', answerInput);
   });
@@ -100,15 +107,6 @@ function endGame(game) {
   `;
   mainContent.insertAdjacentHTML('beforeend', endGameHTML);
   init();
-}
-
-async function getCategories() {
-  const response = await fetch('https://opentdb.com/api_category.php');
-  const data = await response.json();
-  data.trivia_categories.forEach(categoryData => {
-    const category = new Category(categoryData.id, categoryData.name);
-    Category.addCategory(category);
-  });
 }
 
 function displayCategoryOptions() {
