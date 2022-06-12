@@ -48,14 +48,14 @@ function checkAnswer(game) {
   let display;
   if (answer === game.currentQuestion.correctAnswer) {
     game.addScore();
-    display = '<p class="correct-answer">You got it right!</p>';
+    display = '<h3 class="correct-answer">You got it right!</h3>';
   } else {
-    display = '<p class="incorrect-answer">You got it wrong!</p>';
+    display = '<h3 class="incorrect-answer">You got it wrong!</h3>';
   }
 
   document
     .querySelector('.question-answers-container')
-    .insertAdjacentHTML('beforebegin', display);
+    .insertAdjacentHTML('afterbegin', display);
 
   return new Promise(function (resolve, reject) {
     setTimeout(() => {
@@ -75,16 +75,19 @@ function displayQuestion(game) {
   `;
   mainContent.innerHTML = displayedQuestion;
 
-  document.querySelector('.submit-answer-btn').addEventListener('click', () => {
-    checkAnswer(game).then(() => {
-      game.nextQuestion();
-      if (game.current <= game.questions.length - 1) {
-        displayQuestion(game);
-      } else {
-        endGame(game);
-      }
+  document
+    .querySelector('.submit-answer-btn')
+    .addEventListener('click', function () {
+      this.disabled = true;
+      checkAnswer(game).then(() => {
+        game.nextQuestion();
+        if (game.current <= game.questions.length - 1) {
+          displayQuestion(game);
+        } else {
+          endGame(game);
+        }
+      });
     });
-  });
 
   const answerDiv = document.querySelector('.answers');
   game.currentQuestion.allAnswers.forEach((answer, idx) => {
@@ -101,7 +104,7 @@ function displayQuestion(game) {
 function endGame(game) {
   mainContent.innerHTML = '';
   const endGameHTML = `
-    <div>
+    <div class="endgame-content">
       <h1>Game Over. Your score ${game.score} / ${game.questions.length}<h1>
     </div>
   `;
